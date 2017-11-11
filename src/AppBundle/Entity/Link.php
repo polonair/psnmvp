@@ -17,19 +17,13 @@ class Link
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private $name;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Profile")
-     */
+    /** @ORM\ManyToOne(targetEntity="Profile") */
     private $profile;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    /** @ORM\Column(type="datetime") */
     private $worksTill;
 
     public function __construct()

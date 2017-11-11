@@ -24,37 +24,25 @@ class DefaultController extends Controller
     /** @Route("/auth/register", name="register") */ 
     public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder, LoginGenerator $generator)
     {
-        // 1) build the form
         $user = new User();
-        $user
-            ->setUsername($generator->createLogin())
-            ->setCqType(1);
+        $user->setUsername($generator->createLogin())->setCqType(1);
         $form = $this->createForm(UserType::class, $user);
 
-        // 2) handle the submit (will only happen on POST)
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            // 3) Encode the password (you could also do this via Doctrine listener)
+        if ($form->isSubmitted() && $form->isValid()) 
+        {
             $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
-            $user->setPassword($password);
-
-            // 4) save the User!
+            $user->setPassword($password);            
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
-
             $token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
             $this->get("security.token_storage")->setToken($token);
-
             $event = new InteractiveLoginEvent($request, $token);
             $this->get("event_dispatcher")->dispatch("security.interactive_login", $event);
-
             $this->addFlash('plainPassword', $user->getPlainPassword());
-
             return $this->redirectToRoute('createProfile');
         }
-
         return $this->render('default/register.html.twig', array('form' => $form->createView()));
     }
 
@@ -65,40 +53,31 @@ class DefaultController extends Controller
         $lastUsername = $authUtils->getLastUsername();
 
         return $this->render('default/login.html.twig', array(
-            'last_username' => $lastUsername,
-            'error'         => $error,
+            'last_username' => $lastUsername, 
+            'error' => $error
         ));
     }
 
     /** @Route("/auth/recover", name="recover") */ 
     public function recoverAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
-        // 1) build the form
         $u = new User();
         $form = $this->createForm(UserType::class, $u);
-
-        // 2) handle the submit (will only happen on POST)
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
 
-            // 3) Encode the password (you could also do this via Doctrine listener)
+        if ($form->isSubmitted() && $form->isValid())
+        {
             $password = $passwordEncoder->encodePassword($u, $u->getPlainPassword());
             $u->setPassword($password);
-
-            // 4) save the User!
             $em = $this->getDoctrine()->getManager();
             $user = $em->getRepository("AppBundle:User")->findOneByUsername($u->getUsername());
             $user->setPassword($password);
             $em->flush();
-
             $token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
             $this->get("security.token_storage")->setToken($token);
-
             $event = new InteractiveLoginEvent($request, $token);
             $this->get("event_dispatcher")->dispatch("security.interactive_login", $event);
-
             $this->addFlash('plainPassword', $user->getPlainPassword());
-
             return $this->redirectToRoute('profile');
         }
         return $this->render('default/recover.html.twig', array('form' => $form->createView()));
@@ -114,10 +93,10 @@ class DefaultController extends Controller
     public function createProfileAction(Request $request)
     {
         $flashbag = $this->get('session')->getFlashBag();
-
         $password = $flashbag->get("plainPassword", [ null ]);
         return $this->render('default/profile.create.html.twig', [ "plainPassword" => $password[0] ]);
     }
+    
     /** @Route("/link/{code}", name="viewLink") */ 
     public function viewLinkAction(Request $request)
     {

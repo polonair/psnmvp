@@ -21,14 +21,10 @@ class Profile
      */
     private $id;
 
-    /**
-     * @ORM\OneToOne(targetEntity="User", mappedBy="profile")
-     */
+    /** @ORM\OneToOne(targetEntity="User", mappedBy="profile") */
     private $owner;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     private $gender = Profile::GENDER_UNKNOWN;
 
     /**

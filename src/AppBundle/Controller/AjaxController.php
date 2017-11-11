@@ -34,6 +34,7 @@ class AjaxController extends Controller
         else
             return new JsonResponse(array('result' => 'fail'));
     }
+
     /** @Route("/_ajax/findquestion", name="findquestion") */ 
     public function findQuestionAction(Request $request) 
     { 
@@ -46,7 +47,8 @@ class AjaxController extends Controller
             'cqValue' => $x,
             'cqText' => QuestionCollection::QUESTIONS[$x]
         ));
-    }    
+    }
+
     /** @Route("/_ajax/nextlogin", name="nextlogin") */ 
     public function nextLoginAction(Request $request, LoginGenerator $generator) 
     { 
@@ -54,6 +56,7 @@ class AjaxController extends Controller
         if ($user == null) return new JsonResponse(array('login' => $generator->createLogin()));
         else return new JsonResponse(array('login' => $user->getUsername()));
     }
+
     /** @Route("/_ajax/createlink", name="createlink") */ 
     public function createLinkAction(Request $request) 
     { 
@@ -81,6 +84,7 @@ class AjaxController extends Controller
         	return new JsonResponse(array('link' => $url));
         }
     }
+
     /** @Route("/_ajax/xed", name="xed") */ 
     public function xedAction(Request $request) 
     { 
@@ -89,9 +93,6 @@ class AjaxController extends Controller
         $name = $request->request->get("name", null);
         $value = $request->request->get("value", null);
         $pk = $request->request->get("pk", null);
-
-
-
         if ($user->getProfile()->getId() == $pk)
         {
             $profile = $em->getRepository(Profile::class)->find($pk);
