@@ -15,10 +15,38 @@ use AppBundle\Entity\User;
 use AppBundle\Entity\Link;
 use AppBundle\Entity\Profile;
 use AppBundle\Service\LoginGenerator;
+use AppBundle\Utils\QuestionCollection;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class AjaxController extends Controller
-{
+{ 
+    /** @Route("/_ajax/checkcredentials", name="checkcredentials") */ 
+    public function checkCredentialsAction(Request $request) 
+    { 
+        $username = $request->query->get("username", "empty");
+        $cqtype = $request->query->get("cqtype", "empty");
+        $cqvalue = $request->query->get("cqvalue", "empty");
+
+        $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository("AppBundle:User")->findOneByUsername($username);
+        if ($user && ($user->getCqType() == $cqtype) && ($user->getCqValue() == $cqvalue))
+            return new JsonResponse(array('result' => 'ok'));
+        else
+            return new JsonResponse(array('result' => 'fail'));
+    }
+    /** @Route("/_ajax/findquestion", name="findquestion") */ 
+    public function findQuestionAction(Request $request) 
+    { 
+        $username = $request->query->get("d", "empty");
+        $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository("AppBundle:User")->findOneByUsername($username);
+        if ($user) $x = $user->getCqType();
+        else $x = rand(0, count(QuestionCollection::QUESTIONS));
+        return new JsonResponse(array(
+            'cqValue' => $x,
+            'cqText' => QuestionCollection::QUESTIONS[$x]
+        ));
+    }    
     /** @Route("/_ajax/nextlogin", name="nextlogin") */ 
     public function nextLoginAction(Request $request, LoginGenerator $generator) 
     { 

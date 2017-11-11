@@ -22,42 +22,44 @@
     <div class="container">
     	<div  class="row">
     		<div  class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
-			    <h1>Register</h1>
+			    <h1>Password recovery</h1>
 
-			    {{ form_start(form) }}
+				{{ form_start(form) }}
 					<div class="form-group">
 					    {{ form_label(form.username, null, {'label_attr': {'class': 'control-label'}}) }}
 					    <div>
 						    {{ form_errors(form.username) }}
-						    <div class="input-group">
-						    	{{ form_widget(form.username, {'attr': {'class': 'form-control', 'readonly': 'readonly'}}) }}
-      							<span class="input-group-btn">
-      								<button class="btn btn-default" type="button" id="changeLogin">Want another!</button>
-      							</span>
+						    <div>
+						    	{{ form_widget(form.username, {'attr': {'class': 'form-control', 'placeholder': 'Username'}}) }}
       						</div><!-- /input-group -->
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group hidden">
 					    {{ form_label(form.cqType, null, {'label_attr': {'class': 'control-label'}}) }}
 					    <div>
 					    	{{ form_widget(form.cqType, {'attr': {'class': 'form-control', 'placeholder': form.cqType.vars.label}}) }}
 					    </div>
 					</div>
-					<div class="form-group">
+					<div id="cqGroup" class="form-group hidden">
 					    {{ form_label(form.cqValue, null, {'label_attr': {'class': 'control-label'}}) }}
 					    <div>
 					    	{{ form_errors(form.cqValue) }}
 					    	{{ form_widget(form.cqValue, {'attr': {'class': 'form-control', 'placeholder': form.cqValue.vars.label}}) }}
 						</div>
 					</div>
-					<div class="form-group">
+					<div id="alertGroup" class="form-group hidden">
+						<div class="alert alert-danger" role="alert">
+						  <strong>Warning!</strong>Username or question or answer are invalid
+						</div>
+					</div>
+					<div id="pswdGroup1" class="form-group hidden">
 					    {{ form_label(form.plainPassword.first, null, {'label_attr': {'class': 'control-label'}}) }}
 					    <div>
 						    {{ form_errors(form.plainPassword.first) }}
 						    {{ form_widget(form.plainPassword.first, {'attr': {'class': 'form-control', 'placeholder': form.plainPassword.first.vars.label}}) }}
 						</div>
 					</div>
-					<div class="form-group">
+					<div id="pswdGroup2" class="form-group hidden">
 					    {{ form_label(form.plainPassword.second, null, {'label_attr': {'class': 'control-label'}}) }}
 					    <div>
 						    {{ form_errors(form.plainPassword.second) }}
@@ -65,17 +67,18 @@
 						</div>
 					</div>
 					<div class="form-group">
-					  	<button type="submit" class="btn btn-block btn-primary">Register</button>
+					  	<button type="submit" class="btn btn-block btn-primary">Next</button>
 					  </div>					  
 					  <div class="form-group">
 					  	<p class="text-center">
 					  		- or -
 					  	</p>
 					  	<p class="text-center">
-					  		<a href="{{ path('login') }}">Login</a> | <a href="{{ path('recover') }}">Recover password</a>
+					  		<a href="{{ path('login') }}">Login</a> | <a href="{{ path('register') }}">Register</a>
 					  	</p>
 					  </div>
 				{{ form_end(form) }}
+
 			</div>
 		</div>
 	</div>
@@ -84,14 +87,55 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/bs337/js/bootstrap.min.js"></script>
-
-    <script>
-		$(document).ready(function() {
-			$("#changeLogin").click(function(){
-				$.ajax("{{ path('nextlogin') }}")
-					.done(function(msg){ $("#user_username").val(msg.login); });
-			});
-		});
+    <script type="text/javascript">
+    	var stage = 0;
+    	$(document).ready(function(){
+    		$("button").click(
+    		//$("form").submit(
+    			function (e){
+    			if (stage == 0)
+    			{
+    				$.ajax({
+			            url: "{{ path('findquestion') }}", 
+			            data: { d: $("#user_username").val() }})
+			        .done(function(msg){
+			        	$("#user_cqType").val(msg.cqValue);
+			        	$("#cqGroup").removeClass('hidden');
+			        	$("#cqGroup>label").text(msg.cqText);
+			        	stage = 1;
+			        });
+    			}
+    			else if (stage == 1)
+    			{
+    				$.ajax({
+			            url: "{{ path('checkcredentials') }}", 
+			            data: { 
+			            	username: $("#user_username").val(),
+			            	cqtype: $("#user_cqType").val(),
+			            	cqvalue: $("#user_cqValue").val()
+			            }})
+			        .done(function(msg){
+			        	if (msg.result == 'ok')
+			        	{
+			        		$("#alertGroup").addClass('hidden');
+							$("#pswdGroup1").removeClass('hidden');
+							$("#pswdGroup2").removeClass('hidden');
+			        		stage = 2;
+			        	}
+			        	else
+			        	{
+			        		$("#alertGroup").removeClass('hidden');
+			        	}
+			        });
+    			}
+    			else if (stage == 2)
+    			{
+    				return true;
+    			}
+    			e.preventDefault();
+    			return false;
+    		});
+    	});
     </script>
   </body>
 </html>

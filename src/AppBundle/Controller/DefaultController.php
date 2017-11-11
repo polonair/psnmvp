@@ -70,6 +70,40 @@ class DefaultController extends Controller
         ));
     }
 
+    /** @Route("/auth/recover", name="recover") */ 
+    public function recoverAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+    {
+        // 1) build the form
+        $u = new User();
+        $form = $this->createForm(UserType::class, $u);
+
+        // 2) handle the submit (will only happen on POST)
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            // 3) Encode the password (you could also do this via Doctrine listener)
+            $password = $passwordEncoder->encodePassword($u, $u->getPlainPassword());
+            $u->setPassword($password);
+
+            // 4) save the User!
+            $em = $this->getDoctrine()->getManager();
+            $user = $em->getRepository("AppBundle:User")->findOneByUsername($u->getUsername());
+            $user->setPassword($password);
+            $em->flush();
+
+            $token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
+            $this->get("security.token_storage")->setToken($token);
+
+            $event = new InteractiveLoginEvent($request, $token);
+            $this->get("event_dispatcher")->dispatch("security.interactive_login", $event);
+
+            $this->addFlash('plainPassword', $user->getPlainPassword());
+
+            return $this->redirectToRoute('profile');
+        }
+        return $this->render('default/recover.html.twig', array('form' => $form->createView()));
+    }
+
     /** @Route("/my/profile", name="profile") */ 
     public function profileAction(Request $request)
     {
@@ -92,23 +126,4 @@ class DefaultController extends Controller
         if ($link && ($link->getWorksTill() > (new \DateTime("now")))) return $this->render('default/link.view.html.twig', [ 'link' => $link, ]);
         else return $this->render('default/link.404.html.twig', [], new Response("", 404));
     }
-    
-    /*
-     * @Route("/my/profile/edit", name="editProfile")
-     */ 
-    /*public function editProfileAction(Request $request)
-    {
-        return $this->render('default/profile.edit.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
-        ]);
-    }
-    /*
-     * @Route("/my/link/create", name="createLink")
-     */ 
-    /*public function createLinkAction(Request $request)
-    {
-        return $this->render('default/link.create.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
-        ]);
-    }*/
 }
