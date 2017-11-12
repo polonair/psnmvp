@@ -52,10 +52,9 @@ class DefaultController extends Controller
         $error = $authUtils->getLastAuthenticationError();
         $lastUsername = $authUtils->getLastUsername();
 
-        return $this->render('default/login.html.twig', array(
-            'last_username' => $lastUsername, 
-            'error' => $error
-        ));
+        return $this->render(
+            'default/login.html.twig', 
+            array('last_username' => $lastUsername, 'error' => $error));
     }
 
     /** @Route("/auth/recover", name="recover") */ 
@@ -94,7 +93,7 @@ class DefaultController extends Controller
     {
         $flashbag = $this->get('session')->getFlashBag();
         $password = $flashbag->get("plainPassword", [ null ]);
-        return $this->render('default/profile.create.html.twig', [ "plainPassword" => $password[0] ]);
+        return $this->render('default/profile.create.html.twig', array("plainPassword" => $password[0]));
     }
     
     /** @Route("/link/{code}", name="viewLink") */ 
@@ -102,7 +101,9 @@ class DefaultController extends Controller
     {
         $code = $request->attributes->get("code");
         $link = $this->getDoctrine()->getRepository("AppBundle:Link")->findOneByName($code);
-        if ($link && ($link->getWorksTill() > (new \DateTime("now")))) return $this->render('default/link.view.html.twig', [ 'link' => $link, ]);
-        else return $this->render('default/link.404.html.twig', [], new Response("", 404));
+        if ($link && ($link->getWorksTill() > (new \DateTime("now")))) 
+            return $this->render('default/link.view.html.twig', array('link' => $link));
+        else 
+            return $this->render('default/link.404.html.twig', array(), new Response("", 404));
     }
 }
