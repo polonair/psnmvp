@@ -27,9 +27,7 @@ class Profile
     /** @ORM\Column(type="integer") */
     private $gender = Profile::GENDER_UNKNOWN;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    /** @ORM\Column(type="datetime") */
     private $birthday = null;
     
     /** @ORM\Column(type="string", nullable=true) */

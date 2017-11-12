@@ -79,7 +79,7 @@ class AjaxController extends Controller
             $em->flush();
         	$url = $this->generateUrl(
         		'viewLink', 
-        		[ 'code' => $link->getName() ], 
+        		array('code' => $link->getName()), 
         		UrlGeneratorInterface::ABSOLUTE_URL);
         	return new JsonResponse(array('link' => $url));
         }

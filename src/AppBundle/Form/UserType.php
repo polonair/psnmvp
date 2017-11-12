@@ -19,12 +19,12 @@ class UserType extends AbstractType
     {
         $builder
             ->add('username', TextType::class)
-            ->add('cqType', ChoiceType::class, [
+            ->add('cqType', ChoiceType::class, array(
                 'label' => 'Select secret question',
-                'choices' => [ 0,1,2,3,4 ],
+                'choices' => array(0, 1, 2, 3, 4),
                 'choice_label' => function ($value, $key, $index) { return QuestionCollection::QUESTIONS[$index]; }
-            ])
-            ->add('cqValue', TextType::class, ['label' => 'Your answer'])
+            ))
+            ->add('cqValue', TextType::class, array('label' => 'Your answer'))
             ->add('plainPassword', RepeatedType::class, array(
                 'type' => PasswordType::class,
                 'first_options'  => array('label' => 'Password'),
@@ -35,8 +35,6 @@ class UserType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
-            'data_class' => User::class,
-        ));
+        $resolver->setDefaults(array('data_class' => User::class));
     }
 }
