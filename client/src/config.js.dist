@@ -1,0 +1,14 @@
+// Replace these values with your parameters
+
+export default {
+	apiGateway: {
+    URL: "API_GATEWAY_URL",
+    REGION: "API_GATEWAY_URL"
+  },
+  cognito: {
+    REGION: "COGNITO_REGION",
+    IDENTITY_POOL_ID: "COGNITO_IDENTITY_POOL_ID",
+    USER_POOL_ID: "COGNITO_USER_POOL_ID",
+    APP_CLIENT_ID: "COGNITO_APP_CLIENT_ID"
+  }
+};
