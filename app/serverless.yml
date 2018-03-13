@@ -1,0 +1,157 @@
+service: psnaws-app
+
+plugins:
+  - serverless-webpack
+
+custom:
+  webpackIncludeModules: true
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: prod
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:us-east-1:*:*"
+
+functions:
+  createAttachment:
+    handler: attachment.create
+    events:
+      - http:
+          path: attachments/new
+          method: post
+          cors: true
+          authorizer: aws_iam
+  getAttachment:
+    handler: attachment.get
+    events:
+      - http:
+          path: attachments/get/{id}
+          method: get
+          cors: true
+          authorizer: aws_iam
+  listAttachment:
+    handler: attachment.list
+    events:
+      - http:
+          path: attachments/list/{id}
+          method: get
+          cors: true
+          authorizer: aws_iam
+  deleteAttachment:
+    handler: attachment.remove
+    events:
+      - http:
+          path: attachments/delete/{id}
+          method: delete
+          cors: true
+          authorizer: aws_iam
+  createEntry:
+    handler: entry.create
+    events:
+      - http:
+          path: entries/new
+          method: post
+          cors: true
+          authorizer: aws_iam
+  deleteEntry:
+    handler: entry.remove
+    events:
+      - http:
+          path: entries/delete/{id}
+          method: delete
+          cors: true
+          authorizer: aws_iam
+  getEntry:
+    handler: entry.get
+    events:
+      - http:
+          path: entries/get/{id}
+          method: get
+          cors: true
+          authorizer: aws_iam
+  listEntry:
+    handler: entry.list
+    events:
+      - http:
+          path: entries/list
+          method: get
+          cors: true
+          authorizer: aws_iam
+  updateEntry:
+    handler: entry.update
+    events:
+      - http:
+          path: entries/update/{id}
+          method: put
+          cors: true
+          authorizer: aws_iam
+  createLink:
+    handler: link.create
+    events:
+      - http:
+          path: links/new
+          method: post
+          cors: true
+          authorizer: aws_iam
+  createProfile:
+    handler: profile.create
+    events:
+      - http:
+          path: profiles/new
+          method: post
+          cors: true
+          authorizer: aws_iam
+  getLink:
+    handler: link.get
+    events:
+      - http:
+          path: links/get/{id}
+          method: get
+          cors: true
+  listLink:
+    handler: link.list
+    events:
+      - http:
+          path: links/list
+          method: get
+          cors: true
+          authorizer: aws_iam
+  getProfile:
+    handler: profile.get
+    events:
+      - http:
+          path: profiles/get
+          method: get
+          cors: true
+          authorizer: aws_iam
+  updateProfile:
+    handler: profile.update
+    events:
+      - http:
+          path: profiles/update
+          method: put
+          cors: true
+          authorizer: aws_iam
+  userConfirm:
+    handler: user.confirm
+    events:
+      - cognitoUserPool:
+          pool: 'psnaws-userpool'
+          trigger: 'PreSignUp'
+  userPostConfirm:
+    handler: user.postConfirm
+    events:
+      - cognitoUserPool:
+          pool: 'psnaws-userpool'
+          trigger: 'PostConfirmation'

@@ -1,11 +1,13 @@
 {
-  "name": "psnaws-app-client",
-  "version": "0.1.3",
+  "name": "psnaws-client",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
-    "amazon-cognito-identity-js": "^1.28.0",
-    "aws-sdk": "^2.171.0",
+    "amazon-cognito-identity-js": "^1.29.0",
+    "aws-sdk": "^2.208.0",
     "crypto-js": "^3.1.9-1",
+    "debug": "^2.6.8",
+    "prop-types": "^15.6.1",
     "react": "^16.2.0",
     "react-bootstrap": "^0.31.5",
     "react-dom": "^16.2.0",
@@ -18,7 +20,5 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "devDependencies": {
-    "riek": "^1.1.0"
-  }
+  "devDependencies": {}
 }

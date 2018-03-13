@@ -25,28 +25,76 @@ export default class Notes extends Component {
     }
   }
 
-  getLink() {
-    return invokeApigU({ path: `/links/${this.props.match.params.id}` });
-  }
+  getLink = () => invokeApigU({ path: `/links/get/${this.props.match.params.id}` });
 
   renderProfileDetail() {
     return (
       <table class="table">
         <tbody>
-        <tr> <td>birthday</td>             <td>{this.state.link.birthday}</td>              </tr>
-        <tr> <td>gender</td>               <td>{this.state.link.gender}</td>                </tr>
-        <tr> <td>symptoms_active</td>      <td>{this.state.link.symptoms_active}</td>       </tr>
-        <tr> <td>symptoms_past</td>        <td>{this.state.link.symptoms_past}</td>         </tr>
-        <tr> <td>diagnosis_possible</td>   <td>{this.state.link.diagnosis_possible}</td>    </tr>
-        <tr> <td>diagnosis_active</td>     <td>{this.state.link.diagnosis_active}</td>      </tr>
-        <tr> <td>diagnosis_past</td>       <td>{this.state.link.diagnosis_past}</td>        </tr>
-        <tr> <td>medicaments_active</td>   <td>{this.state.link.medicaments_active}</td>    </tr>
-        <tr> <td>medicaments_past</td>     <td>{this.state.link.medicaments_past}</td>      </tr>
-        <tr> <td>hospitals</td>            <td>{this.state.link.hospitals}</td>             </tr>
-        <tr> <td>doctors</td>              <td>{this.state.link.doctors}</td>               </tr>
-        <tr> <td>procedures</td>           <td>{this.state.link.procedures}</td>            </tr>
-        <tr> <td>alternative_medicine</td> <td>{this.state.link.alternative_medicine }</td> </tr>
-        <tr> <td>supplement</td>           <td>{this.state.link.supplement}</td>            </tr>
+          <tr><td>Sex</td><td>{this.state.link.sex=='male'?'Male':'Female'}</td></tr>
+          <tr><td>Birthday</td><td>{this.state.link.birthday}</td></tr>
+          <tr><td>Term of illness</td><td>{this.state.link.illnessTerm}</td></tr>
+          <tr>
+            <td>Diagnosis</td>
+            <td>
+              { Array.isArray(this.state.link.diagnosis)?[].concat(this.state.link.diagnosis).map((entry, i) => {return (<span>{entry}, </span>); }):"-" }
+            </td>
+          </tr>
+
+          <tr>
+            <td>Symptoms</td>
+            <td>
+              {Array.isArray(this.state.link.symptoms)?[].concat(this.state.link.symptoms).map((entry, i) => {return (<span>{entry}, </span>); }):"-"}
+            </td>
+          </tr>
+
+
+        <tr>
+          <td>Hospitals</td>
+          <td>
+            {Array.isArray(this.state.link.hospitals)?[].concat(this.state.link.hospitals).map((entry, i) => {return (<span>{entry}, </span>); }):"-"}
+          </td>
+        </tr>
+        <tr>
+          <td>Doctors</td>
+          <td>
+            {Array.isArray(this.state.link.doctors)?[].concat(this.state.link.doctors).map((entry, i) => {return (<span>{entry}, </span>); }):"-"}
+          </td>
+        </tr>
+        <tr>
+          <td>Procedures</td>
+          <td>
+            {Array.isArray(this.state.link.procedures)?[].concat(this.state.link.procedures).map((entry, i) => {return (<span>{entry}, </span>); }):"-"}
+          </td>
+        </tr>
+        <tr>
+          <td>Alternative medicine</td>
+          <td>
+            {Array.isArray(this.state.link.alternatives)?[].concat(this.state.link.alternatives).map((entry, i) => {return (<span>{entry}, </span>); }):"-"}
+          </td>
+        </tr>
+
+
+
+
+          <tr>
+            <td>Medicaments</td>
+            <td>
+              <ul>
+                {[].concat(this.state.link.medicaments).map((entry, i) => { 
+                  return (<li>{entry.name}; {entry.dosage}; {entry.times}; {entry.term}</li>); })}
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>Supplements</td>
+            <td>
+              <ul>
+                {[].concat(this.state.link.supplements).map((entry, i) => { 
+                  return (<li>{entry.name}; {entry.dosage}; {entry.times}; {entry.term}</li>); })}
+              </ul>
+            </td>
+          </tr>
         </tbody>
         </table>
       );

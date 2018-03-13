@@ -19,8 +19,10 @@ export default class Signup extends Component {
     super(props);
 
     this.state = {
+      haveLetter: false,
       isLoading: false,
       username: "",
+      forwho: "",
       question: "",
       answer: "",
       password: "",
@@ -33,9 +35,10 @@ export default class Signup extends Component {
   validateForm() {
     return (
       this.state.username.length > 0 &&
-      this.state.password.length > 0 &&
+      this.state.password.length >= 8 &&
       this.state.question.length > 0 &&
       this.state.answer.length > 0 &&
+      this.state.forwho.length > 0 &&
       this.state.password === this.state.confirmPassword
     );
   }
@@ -44,6 +47,25 @@ export default class Signup extends Component {
     this.setState({
       [event.target.id]: event.target.value
     });
+    if (event.target.id == 'forwho')
+    {
+      var un = this.state.username;
+      if (this.state.haveLetter)
+      {
+        un = un.slice(0, -2);
+      }
+      switch(event.target.value)
+      {
+        case "me": un+="ME"; break;
+        case "parent": un+="PR"; break;
+        case "sibling": un+="SB"; break;
+        case "friend": un+="FR"; break;
+        case "spouse": un+="SP"; break;
+        case "child": un+="CH"; break;
+        case "patient": un+="PT"; break;
+      }
+      this.setState({ username: un, haveLetter: true });
+    }
   }
 
   handleSubmit = async event => {
@@ -67,9 +89,10 @@ export default class Signup extends Component {
       );
 
       this.props.userHasAuthenticated(true);
-      this.props.history.push("/new");
+      localStorage.setItem('LastUser', this.state.username);
+      this.props.history.push("/");
     } catch (e) {
-      alert(e);
+      console.log(e);
       this.setState({ isLoading: false });
     }
   }
@@ -140,6 +163,25 @@ export default class Signup extends Component {
           />
         </FormGroup>
 
+        <FormGroup controlId="forwho" bsSize="large">
+          <ControlLabel>I want to create profile for</ControlLabel>
+          <FormControl
+            type="text" 
+            onChange={this.handleChange}
+            componentClass="select" 
+            defaultValue="none"
+            placeholder="Select option">
+              <option value="none" disabled="disabled">Please, select an option</option>
+              <option value="me">me</option>
+              <option value="parent">my parent</option>
+              <option value="sibling">my sibling</option>
+              <option value="friend">my friend</option>
+              <option value="spouse">my spouse</option>
+              <option value="child">my child</option>
+              <option value="patient">my patient</option>
+            </FormControl>
+        </FormGroup>
+
         <FormGroup controlId="question" bsSize="large">
           <ControlLabel>Secret question</ControlLabel>
           <FormControl
@@ -171,7 +213,7 @@ export default class Signup extends Component {
         </FormGroup>
 
         <FormGroup controlId="password" bsSize="large">
-          <ControlLabel>Password</ControlLabel>
+          <ControlLabel>Password (at least 8 charachters)</ControlLabel>
           <FormControl
             value={this.state.password}
             onChange={this.handleChange}

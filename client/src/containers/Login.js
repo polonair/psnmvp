@@ -19,6 +19,17 @@ export default class Login extends Component {
     };
   }
 
+  async componentDidMount() {
+    var x = localStorage.getItem('LastUser');
+    if (x) this.setState({ username: x });
+  }
+
+  handleChange = event => {
+    this.setState({
+      [event.target.id]: event.target.value
+    });
+  }
+
   validateForm() {
     return this.state.username.length > 0 && this.state.password.length > 0;
   }
@@ -35,6 +46,7 @@ export default class Login extends Component {
     try {
       await this.login(this.state.username, this.state.password);
       this.props.userHasAuthenticated(true);
+      localStorage.setItem('LastUser', this.state.username);
       this.props.history.push("/");
     } catch (e) {
       alert(e);
